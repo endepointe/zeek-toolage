@@ -1,7 +1,7 @@
 # Compiler and flags
 CC = gcc
 INCLUDES = /usr/include/postgresql
-CFLAGS = -Wall -Werror -Wextra -O3 $(if $(DEBUG),-g) -I$(INCLUDES)
+CFLAGS = --std=c17 -Wall -Werror -Wextra -O3 $(if $(DEBUG),-g) -I$(INCLUDES)
 
 # Directories
 SRC_DIR := src
