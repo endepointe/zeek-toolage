@@ -1,7 +1,8 @@
 # Compiler and flags
 CC = gcc
-INCLUDES = /usr/include/postgresql
-CFLAGS = --std=c17 -Wall -Werror -Wextra -O3 $(if $(DEBUG),-g) -I$(INCLUDES)
+LIBS = -L/usr/lib/x86_64-linux-gnu # $ pg_config --libdir
+INCLUDES = -I/usr/include/postgresql
+CFLAGS = --std=c17 -Wall -Werror -Wextra -O3 $(if $(DEBUG),-g) $(INCLUDES) $(LIBS) -lpq
 
 # Directories
 SRC_DIR := src
@@ -28,7 +29,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 # Rule for each binary
 $(BUILD_DIR)/pg_watcher: $(pg_watcher_OBJS)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) -o $@ $^ $(CFLAGS) 
 
 $(BUILD_DIR)/test: $(test_OBJS)
 	@mkdir -p $(BUILD_DIR)
