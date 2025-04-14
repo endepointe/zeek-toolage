@@ -11,7 +11,7 @@ BUILD_DIR := build
 
 # Define binaries and their source locations
 BINARIES := pg_watcher test
-pg_watcher_SRCS := $(wildcard $(SRC_DIR)/database/*.c)
+pg_watcher_SRCS := $(wildcard $(SRC_DIR)/postgresql/*.c)
 test_SRCS := $(SRC_DIR)/test.c
 
 # Auto-generate object files per binary
