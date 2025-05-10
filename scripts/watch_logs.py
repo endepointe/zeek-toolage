@@ -14,7 +14,7 @@ from psycopg2 import OperationalError, ProgrammingError, extras # Import extras 
 
 # Database Connection (from previous script)
 DB_PARAMS = {
-    "dbname": "",
+    "database": "",
     "user": "",
     "password": "",
     "host": "",
