@@ -23,7 +23,7 @@ DB_PARAMS = {
 }
 
 # Directory containing the Zeek log files to monitor
-LOG_DIR_TO_WATCH = "logs/current/" # !!! IMPORTANT: CHANGE THIS PATH !!!
+LOG_DIR_TO_WATCH = "/opt/zeek/logs/current/" # !!! IMPORTANT: CHANGE THIS PATH !!!
 
 # Mapping from Zeek log filenames to database table names and expected columns
 # IMPORTANT: The order of columns MUST match the order in your CREATE TABLE statements
