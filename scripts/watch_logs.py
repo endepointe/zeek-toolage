@@ -215,10 +215,10 @@ def get_db_connection():
     """Establishes and returns a new database connection."""
     try:
         conn = psycopg2.connect(**DB_PARAMS)
-        logging.debug(f"Successfully connected to database '{DB_PARAMS['dbname']}'.")
+        logging.debug(f"Successfully connected to database '{DB_PARAMS['database']}'.")
         return conn
     except OperationalError as e:
-        logging.error(f"Could not connect to database '{DB_PARAMS['dbname']}': {e}")
+        logging.error(f"Could not connect to database '{DB_PARAMS['database']}': {e}")
         return None
 
 def insert_batch(conn, table_name, rows):
