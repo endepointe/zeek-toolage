@@ -524,8 +524,14 @@ def parse_db_params(args):
     parser.add_argument("--host", type=str, help="Database host", default="localhost")
     parser.add_argument("--port", type=int, help="Database port", default=5432)
     parser.add_argument("--user", type=str, help="Database user", default="postgres")
-    parser.add_argument("--password", type=str, help="Database password", required=True)
+    parser.add_argument("--password", dest="password", help="Database password uses pipe to read from stdin")
     parser.add_argument("--database", type=str, help="Database name", default="postgres")
+
+    arguments = parser.parse_args()
+    password = arguments.password
+
+    if not password:
+        password = sys.stdin.readline().strip()  # Read password from stdin
 
     parsed_args = parser.parse_args(args)
 
@@ -533,7 +539,7 @@ def parse_db_params(args):
         "host": parsed_args.host,
         "port": parsed_args.port,
         "user": parsed_args.user,
-        "password": parsed_args.password,
+        "password": password,
         "database": parsed_args.database,
     }
 
