@@ -1,4 +1,4 @@
-
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
@@ -31,6 +31,31 @@ int print_dbg(const char* format, ...)
     return 0;
 #endif   
     return 0;
+}
+
+// include this in a different header file
+int
+read_log_format(void)
+{
+    char command[] = "cat /opt/zeek/logs/current/conn.log|zeek-cut -m|head -n1";
+    FILE* fp;
+    char path[1035];
+
+    fp = popen(command, "r");
+    if (fp == NULL)
+    {
+        fprintf(stderr, "failed to run command\n");
+        return 1;
+    }
+    
+    while (fgets(path, sizeof(path), fp) != NULL) 
+    {
+        printf("%s", path);
+    }
+
+    int exit_code = pclose(fp);
+
+    return exit_code;
 }
 
 enum
@@ -69,6 +94,66 @@ sanitize_str(int len, char* str)
     return 0;
 }
 
+// put this function in another header file for db operations
+int
+create_pgdb_if_exists(const char* db_name, const char* db_user, const char* db_pass)
+{
+    PGconn *conn = NULL;
+    PGresult *result = NULL;
+    const char* conninfo = NULL;
+    char query[256];
+
+    snprintf(conninfo, sizeof(conninfo), "user=%s password=%s dbname=%s",
+            db_user, db_pass, db_name);
+
+    conn = PQconnectdb(conninfo);
+    if (PQstatus(conn) != CONNECTION_OK)
+    {
+        fprintf(stderr, "db connection failed: %s\n", PQerrorMessage(conn));
+        PQfinish(conn);
+        return -1;
+    }
+    snprintf(query, sizeof(query), "SELECT 1 FROM pg_database WHERE datname='%s'", db_name);
+    res = PQexec(conn, query);
+
+    if (PQresultStatus(res) != PGRES_TUPLES_OK) 
+    {
+        fprintf(stderr, "SELECT query failed: %s\n", PQerrorMessage(conn));
+        PQclear(result);
+        PQfinish(conn);
+        return -1;
+    }
+
+    if (PQntuples(result) > 0) 
+    {
+        // Database already exists
+        PQclear(result);
+        PQfinish(conn);
+        printf("Database '%s' already exists.\n", db_name);
+        return 0;
+    }
+
+    PQclear(res);
+
+    // Create the database
+    snprintf(query, sizeof(query), "CREATE DATABASE %s", db_name);
+    result = PQexec(conn, query);
+
+    if (PQresultStatus(result) != PGRES_COMMAND_OK) 
+    {
+        fprintf(stderr, "CREATE DATABASE failed: %s\n", PQerrorMessage(conn));
+        PQclear(result);
+        PQfinish(conn);
+        return -1;
+    }
+
+    PQclear(result);
+    PQfinish(conn);
+
+    printf("Database '%s' created successfully.\n", db_name);
+    return 0;
+}
+
 int 
 main(int argc, char **argv)
 {
@@ -77,6 +162,8 @@ main(int argc, char **argv)
     //PGresult*   result = NULL; 
     //int         nFields;
     //int         i,j;
+
+    read_log_format();
 
     if (argc > 1) 
     {
@@ -97,6 +184,8 @@ main(int argc, char **argv)
         printf("connection error: %s", PQerrorMessage(conn_ptr));
         exit_nicely(conn_ptr);
     } 
+
+    printf("connect success\n");
     
     // TASKS to complete tomorrow:
     // 1) create schema for tables that will store the logs

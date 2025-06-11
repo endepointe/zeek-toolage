@@ -2,7 +2,7 @@
 CC = gcc
 LIBS = -L/usr/lib/x86_64-linux-gnu # $ pg_config --libdir
 INCLUDES = -I/usr/include/postgresql
-CFLAGS = --std=c17 -Wall -Werror -Wextra -O3 $(if $(DEBUG),-g) $(INCLUDES) $(LIBS) -lpq
+CFLAGS = --std=c17 -Wall -Werror -Wextra -O3 $(if $(DEBUG),-g) $(INCLUDES) $(LIBS) -lpq 
 
 # Directories
 SRC_DIR := src
