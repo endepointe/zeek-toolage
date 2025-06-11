@@ -100,7 +100,7 @@ create_pgdb_if_exists(const char* db_name, const char* db_user, const char* db_p
 {
     PGconn *conn = NULL;
     PGresult *result = NULL;
-    const char* conninfo = NULL;
+    char conninfo[256];
     char query[256];
 
     snprintf(conninfo, sizeof(conninfo), "user=%s password=%s dbname=%s",
@@ -114,9 +114,9 @@ create_pgdb_if_exists(const char* db_name, const char* db_user, const char* db_p
         return -1;
     }
     snprintf(query, sizeof(query), "SELECT 1 FROM pg_database WHERE datname='%s'", db_name);
-    res = PQexec(conn, query);
+    result = PQexec(conn, query);
 
-    if (PQresultStatus(res) != PGRES_TUPLES_OK) 
+    if (PQresultStatus(result) != PGRES_TUPLES_OK) 
     {
         fprintf(stderr, "SELECT query failed: %s\n", PQerrorMessage(conn));
         PQclear(result);
@@ -133,7 +133,7 @@ create_pgdb_if_exists(const char* db_name, const char* db_user, const char* db_p
         return 0;
     }
 
-    PQclear(res);
+    PQclear(result);
 
     // Create the database
     snprintf(query, sizeof(query), "CREATE DATABASE %s", db_name);
